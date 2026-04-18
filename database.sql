@@ -12,12 +12,13 @@ create table psicologos (
 
 create table pacientes (
   id uuid primary key default gen_random_uuid(),
-  psicologo_id uuid references psicologos(id) on delete cascade,
+  psicologo_id uuid references psicologos(id) on delete set null, -- nullable: pacientes auto-cadastrados não têm psicologo_id inicial
   nome text not null,
   email text,
   telefone text,
   data_nascimento date,
   convenio text,
+  senha text, -- apenas para pacientes com login próprio
   ativo boolean default true,
   criado_em timestamptz default now()
 );

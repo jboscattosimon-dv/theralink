@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theralink — Meu Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0F4F8;
+  --surface: #FFFFFF;
+  --border: #DDE3EA;
+  --text: #1A2332;
+  --muted: #6B7A8D;
+  --accent: #4A7C6F;
+  --accent-light: #E8F2F0;
+  --danger: #D94F4F;
+  --sidebar-w: 220px;
+  --r: 14px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: var(--text); color: #fff;
+  display: flex; flex-direction: column;
+  z-index: 100; padding: 24px 0;
+}
+
+.sidebar-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem; font-weight: 800;
+  color: #fff; padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logo span { color: #7BBFB0; }
+
+.sidebar-role {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.nav { flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 4px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  color: rgba(255,255,255,0.6); font-size: 0.88rem;
+  font-weight: 500; cursor: pointer; transition: all 0.2s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.nav-item.active { background: var(--accent); color: #fff; }
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 14px 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-info {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 10px;
+}
+
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.82rem; color: #fff;
+  flex-shrink: 0;
+}
+
+.user-name { font-size: 0.83rem; font-weight: 600; color: #fff; }
+.user-email { font-size: 0.72rem; color: rgba(255,255,255,0.45); }
+
+.btn-sair {
+  width: 100%; margin-top: 8px; padding: 9px;
+  background: rgba(255,255,255,0.07); border: none; border-radius: 10px;
+  color: rgba(255,255,255,0.5); font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-sair:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+.header {
+  padding: 28px 32px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.header h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; }
+.header p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+
+.content { padding: 24px 32px; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* GRID PSICÓLOGOS */
+.psi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.psi-card {
+  background: var(--surface);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.psi-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(74,124,111,0.12);
+  transform: translateY(-2px);
+}
+
+.psi-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.psi-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 800; font-size: 1.2rem;
+  color: #fff; flex-shrink: 0;
+}
+
+.psi-nome {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.psi-crp {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.psi-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 10px;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.btn-chat {
+  width: 100%;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-chat:hover { opacity: 0.85; }
+
+/* PAINEL DE CHAT */
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 300;
+  padding: 0;
+}
+
+.chat-overlay.open { display: flex; }
+
+.chat-panel {
+  background: var(--surface);
+  width: 400px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 32px rgba(0,0,0,0.15);
+}
+
+.chat-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 700; color: #fff;
+  font-size: 0.9rem;
+}
+
+.chat-psi-nome { font-weight: 700; font-size: 0.95rem; }
+.chat-psi-crp { font-size: 0.78rem; color: var(--muted); }
+
+.btn-fechar-chat {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 4px;
+}
+
+.btn-fechar-chat:hover { color: var(--text); }
+
+.chat-hint {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.8rem;
+  padding: 10px 20px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.msg.paciente {
+  background: var(--accent);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.msg.psicologo {
+  background: var(--bg);
+  color: var(--text);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.msg-time {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.msg.psicologo .msg-time { text-align: left; }
+
+.chat-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-align: center;
+  padding: 24px;
+}
+
+.chat-input-area {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+  resize: none;
+  height: 44px;
+}
+
+.chat-input:focus { border-color: var(--accent); background: #fff; }
+
+.btn-enviar {
+  padding: 0 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-enviar:hover { opacity: 0.85; }
+.btn-enviar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 60px 24px; color: var(--muted); }
+.empty p { font-size: 0.9rem; margin-top: 8px; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); color: #fff;
+  padding: 12px 24px; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 500; transition: transform 0.3s; z-index: 999;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.erro { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    Thera<span>link</span>
+    <div class="sidebar-role">Área do paciente</div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" onclick="irPara('psicologos', this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Psicólogos
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div>
+        <div class="user-name" id="user-nome">...</div>
+        <div class="user-email" id="user-email"></div>
+      </div>
+    </div>
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div id="tab-psicologos" class="tab-content active">
+    <div class="header">
+      <div>
+        <h2>Psicólogos disponíveis</h2>
+        <p>Escolha um profissional e inicie uma conversa</p>
+      </div>
+    </div>
+    <div class="content">
+      <div class="psi-grid" id="psi-grid">
+        <div class="empty"><p>Carregando psicólogos...</p></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- PAINEL DE CHAT -->
+<div class="chat-overlay" id="chat-overlay" onclick="fecharChat(event)">
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-avatar" id="chat-avatar">?</div>
+      <div>
+        <div class="chat-psi-nome" id="chat-psi-nome">—</div>
+        <div class="chat-psi-crp" id="chat-psi-crp"></div>
+      </div>
+      <button class="btn-fechar-chat" onclick="document.getElementById('chat-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="chat-hint">
+      Envie uma mensagem para marcar sua consulta
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-empty">
+        <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:0.3">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        <p>Nenhuma mensagem ainda.<br>Diga olá!</p>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chat-input" placeholder="Digite sua mensagem..." onkeydown="handleEnter(event)" rows="1"></textarea>
+      <button class="btn-enviar" onclick="enviarMensagem()" id="btn-enviar">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+const API = 'https://theralink-production.up.railway.app/api';
+const token = localStorage.getItem('token-pac');
+const paciente = JSON.parse(localStorage.getItem('paciente') || '{}');
+
+if (!token) window.location.href = 'index.html';
+
+// Setup usuário na sidebar
+document.getElementById('user-nome').textContent = paciente.nome || '';
+document.getElementById('user-email').textContent = paciente.email || '';
+document.getElementById('user-avatar').textContent = (paciente.nome || '?')[0].toUpperCase();
+
+const hora = new Date().getHours();
+let psiSelecionado = null;
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+}
+
+function toast(msg, erro = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (erro ? ' erro' : '');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function irPara(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function sair() {
+  localStorage.removeItem('token-pac');
+  localStorage.removeItem('paciente');
+  window.location.href = 'index.html';
+}
+
+// CARREGAR PSICÓLOGOS
+async function carregarPsicologos() {
+  try {
+    const res = await fetch(`${API}/psicologos`);
+    const lista = await res.json();
+    const grid = document.getElementById('psi-grid');
+    if (!lista.length) {
+      grid.innerHTML = '<div class="empty"><p>Nenhum psicólogo disponível no momento.</p></div>';
+      return;
+    }
+    grid.innerHTML = lista.map(p => `
+      <div class="psi-card" onclick="abrirChat('${p.id}', '${p.nome}', '${p.crp || ''}')">
+        <div class="psi-card-header">
+          <div class="psi-avatar">${p.nome[0].toUpperCase()}</div>
+          <div>
+            <div class="psi-nome">${p.nome}</div>
+            ${p.crp ? `<div class="psi-crp">CRP ${p.crp}</div>` : ''}
+          </div>
+        </div>
+        <span class="psi-badge">Disponível</span>
+        <button class="btn-chat" onclick="event.stopPropagation(); abrirChat('${p.id}', '${p.nome}', '${p.crp || ''}')">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          Iniciar conversa
+        </button>
+      </div>
+    `).join('');
+  } catch {
+    toast('Erro ao carregar psicólogos', true);
+  }
+}
+
+// CHAT
+async function abrirChat(psiId, psiNome, psiCrp) {
+  psiSelecionado = psiId;
+  document.getElementById('chat-avatar').textContent = psiNome[0].toUpperCase();
+  document.getElementById('chat-psi-nome').textContent = psiNome;
+  document.getElementById('chat-psi-crp').textContent = psiCrp ? `CRP ${psiCrp}` : '';
+  document.getElementById('chat-overlay').classList.add('open');
+  document.getElementById('chat-input').value = '';
+  await carregarMensagens(psiId);
+
+  // Socket.io: entrar na sala deste chat
+  const room = `${paciente.id}_${psiId}`;
+  socket.emit('join_room', room);
+}
+
+function fecharChat(e) {
+  if (e.target === document.getElementById('chat-overlay')) {
+    document.getElementById('chat-overlay').classList.remove('open');
+    psiSelecionado = null;
+  }
+}
+
+async function carregarMensagens(psiId) {
+  try {
+    const res = await fetch(`${API}/chat-pac/${psiId}`, { headers: headers() });
+    if (!res.ok) throw new Error();
+    const msgs = await res.json();
+    renderMensagens(msgs);
+  } catch {
+    toast('Erro ao carregar mensagens', true);
+  }
+}
+
+function renderMensagens(msgs) {
+  const container = document.getElementById('chat-messages');
+  if (!msgs.length) {
+    container.innerHTML = `
+      <div class="chat-empty">
+        <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:0.3">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        <p>Nenhuma mensagem ainda.<br>Diga olá!</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = msgs.map(m => {
+    const hora = new Date(m.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `<div class="msg ${m.remetente}">
+      ${m.conteudo}
+      <div class="msg-time">${hora}</div>
+    </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function adicionarMensagem(msg) {
+  const container = document.getElementById('chat-messages');
+  const emptyEl = container.querySelector('.chat-empty');
+  if (emptyEl) emptyEl.remove();
+  const hora = new Date(msg.criado_em || new Date()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const el = document.createElement('div');
+  el.className = `msg ${msg.remetente}`;
+  el.innerHTML = `${msg.conteudo}<div class="msg-time">${hora}</div>`;
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function enviarMensagem() {
+  const input = document.getElementById('chat-input');
+  const conteudo = input.value.trim();
+  if (!conteudo || !psiSelecionado) return;
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/chat-pac`, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ psicologo_id: psiSelecionado, conteudo })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erro);
+    input.value = '';
+    adicionarMensagem({ ...data, remetente: 'paciente' });
+    // Notificar via socket
+    const room = `${paciente.id}_${psiSelecionado}`;
+    socket.emit('send_message', { room, conteudo, remetente: 'paciente', criado_em: new Date() });
+  } catch (err) {
+    toast(err.message || 'Erro ao enviar mensagem', true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function handleEnter(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    enviarMensagem();
+  }
+}
+
+// Socket.io
+const socket = io('https://theralink-production.up.railway.app');
+socket.on('receive_message', (data) => {
+  if (data.remetente === 'psicologo' && psiSelecionado) {
+    adicionarMensagem(data);
+  }
+});
+
+carregarPsicologos();
+</script>
+</body>
+</html>

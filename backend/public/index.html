@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Theralink — Acesso</title>
+<title>Theralink — Bem-vindo</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,14 +27,46 @@ body {
   color: var(--text);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 24px;
 }
 
+/* Botão psicólogo no canto */
+.psi-corner {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+}
+
+.btn-psi-corner {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.btn-psi-corner:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* CONTAINER PRINCIPAL */
 .container {
   width: 100%;
   max-width: 440px;
-  padding: 24px;
 }
 
 .logo {
@@ -44,7 +76,7 @@ body {
 
 .logo h1 {
   font-family: 'Syne', sans-serif;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: var(--accent);
   letter-spacing: -0.5px;
@@ -52,8 +84,8 @@ body {
 
 .logo p {
   color: var(--muted);
-  font-size: 0.9rem;
-  margin-top: 4px;
+  font-size: 0.92rem;
+  margin-top: 6px;
 }
 
 .card {
@@ -64,13 +96,26 @@ body {
   border: 1px solid var(--border);
 }
 
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.card-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+
 .tabs {
   display: flex;
   gap: 4px;
   background: var(--bg);
   border-radius: 10px;
   padding: 4px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .tab {
@@ -141,6 +186,67 @@ input:focus { border-color: var(--accent); background: #fff; }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* MODAL PSICÓLOGO */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.overlay.open { display: flex; }
+
+.modal-psi {
+  background: var(--surface);
+  border-radius: var(--r);
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modal-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.btn-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.btn-close:hover { color: var(--text); }
+
+/* TOAST */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -162,20 +268,33 @@ input:focus { border-color: var(--accent); background: #fff; }
 </head>
 <body>
 
+<!-- Botão psicólogo no canto -->
+<div class="psi-corner">
+  <button class="btn-psi-corner" onclick="abrirModalPsi()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    Sou psicólogo
+  </button>
+</div>
+
 <div class="container">
   <div class="logo">
     <h1>Theralink</h1>
-    <p>Plataforma para psicólogos</p>
+    <p>Encontre seu psicólogo e cuide da sua saúde mental</p>
   </div>
 
   <div class="card">
+    <div class="card-title">Acesso para pacientes</div>
+    <div class="card-sub">Entre na sua conta ou crie uma nova</div>
+
     <div class="tabs">
       <button class="tab active" onclick="trocarTab('login')">Entrar</button>
       <button class="tab" onclick="trocarTab('registro')">Criar conta</button>
     </div>
 
-    <!-- Login -->
-    <form class="form active" id="form-login" onsubmit="login(event)">
+    <!-- Login paciente -->
+    <form class="form active" id="form-login" onsubmit="loginPaciente(event)">
       <div>
         <label>E-mail</label>
         <input type="email" id="login-email" placeholder="seu@email.com" required>
@@ -187,25 +306,72 @@ input:focus { border-color: var(--accent); background: #fff; }
       <button class="btn" type="submit" id="btn-login">Entrar</button>
     </form>
 
-    <!-- Registro -->
-    <form class="form" id="form-registro" onsubmit="registro(event)">
+    <!-- Registro paciente -->
+    <form class="form" id="form-registro" onsubmit="registroPaciente(event)">
       <div>
         <label>Nome completo</label>
-        <input type="text" id="reg-nome" placeholder="Dra. Ana Silva" required>
+        <input type="text" id="reg-nome" placeholder="Seu nome" required>
       </div>
       <div>
         <label>E-mail</label>
         <input type="email" id="reg-email" placeholder="seu@email.com" required>
       </div>
       <div>
-        <label>CRP</label>
-        <input type="text" id="reg-crp" placeholder="06/123456">
+        <label>Telefone (opcional)</label>
+        <input type="tel" id="reg-telefone" placeholder="(11) 99999-9999">
       </div>
       <div>
         <label>Senha</label>
-        <input type="password" id="reg-senha" placeholder="Mínimo 6 caracteres" required>
+        <input type="password" id="reg-senha" placeholder="Mínimo 6 caracteres" required minlength="6">
       </div>
       <button class="btn" type="submit" id="btn-registro">Criar conta</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal login psicólogo -->
+<div class="overlay" id="overlay-psi" onclick="fecharModalPsi(event)">
+  <div class="modal-psi">
+    <button class="btn-close" onclick="document.getElementById('overlay-psi').classList.remove('open')">✕</button>
+    <div class="modal-header">
+      <h3>Acesso Psicólogo</h3>
+      <span class="modal-badge">Profissional</span>
+    </div>
+    <form style="display:flex;flex-direction:column;gap:16px" onsubmit="loginPsicologo(event)">
+      <div>
+        <label>E-mail</label>
+        <input type="email" id="psi-email" placeholder="seu@email.com" required>
+      </div>
+      <div>
+        <label>Senha</label>
+        <input type="password" id="psi-senha" placeholder="••••••••" required>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" type="submit" id="btn-psi-login">Entrar</button>
+        <button type="button" style="background:none;border:none;color:var(--muted);font-size:0.82rem;cursor:pointer;font-family:inherit" onclick="mostrarRegistroPsi()">
+          Não tem conta? Cadastre-se
+        </button>
+      </div>
+    </form>
+    <!-- Registro psicólogo (oculto por padrão) -->
+    <form id="form-reg-psi" style="display:none;flex-direction:column;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)" onsubmit="registroPsicologo(event)">
+      <div>
+        <label>Nome completo</label>
+        <input type="text" id="psi-reg-nome" placeholder="Dr. Nome Sobrenome" required>
+      </div>
+      <div>
+        <label>E-mail</label>
+        <input type="email" id="psi-reg-email" placeholder="seu@email.com" required>
+      </div>
+      <div>
+        <label>CRP</label>
+        <input type="text" id="psi-reg-crp" placeholder="06/123456">
+      </div>
+      <div>
+        <label>Senha</label>
+        <input type="password" id="psi-reg-senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+      </div>
+      <button class="btn" type="submit" id="btn-psi-registro">Criar conta</button>
     </form>
   </div>
 </div>
@@ -230,13 +396,29 @@ function toast(msg, erro = false) {
   setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-async function login(e) {
+function abrirModalPsi() {
+  document.getElementById('overlay-psi').classList.add('open');
+}
+
+function fecharModalPsi(e) {
+  if (e.target === document.getElementById('overlay-psi')) {
+    document.getElementById('overlay-psi').classList.remove('open');
+  }
+}
+
+function mostrarRegistroPsi() {
+  const form = document.getElementById('form-reg-psi');
+  form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+}
+
+// LOGIN PACIENTE
+async function loginPaciente(e) {
   e.preventDefault();
   const btn = document.getElementById('btn-login');
   btn.disabled = true;
   btn.textContent = 'Entrando...';
   try {
-    const res = await fetch(`${API}/auth/login`, {
+    const res = await fetch(`${API}/auth-pac/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -246,9 +428,9 @@ async function login(e) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.erro);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('psicologo', JSON.stringify(data.psicologo));
-    window.location.href = 'dashboard.html';
+    localStorage.setItem('token-pac', data.token);
+    localStorage.setItem('paciente', JSON.stringify(data.paciente));
+    window.location.href = 'dashboard-pac.html';
   } catch (err) {
     toast(err.message, true);
     btn.disabled = false;
@@ -256,19 +438,20 @@ async function login(e) {
   }
 }
 
-async function registro(e) {
+// REGISTRO PACIENTE
+async function registroPaciente(e) {
   e.preventDefault();
   const btn = document.getElementById('btn-registro');
   btn.disabled = true;
   btn.textContent = 'Criando conta...';
   try {
-    const res = await fetch(`${API}/auth/registro`, {
+    const res = await fetch(`${API}/auth-pac/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nome: document.getElementById('reg-nome').value,
         email: document.getElementById('reg-email').value,
-        crp: document.getElementById('reg-crp').value,
+        telefone: document.getElementById('reg-telefone').value,
         senha: document.getElementById('reg-senha').value
       })
     });
@@ -284,8 +467,65 @@ async function registro(e) {
   }
 }
 
+// LOGIN PSICÓLOGO
+async function loginPsicologo(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-psi-login');
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('psi-email').value,
+        senha: document.getElementById('psi-senha').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erro);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('psicologo', JSON.stringify(data.psicologo));
+    window.location.href = 'dashboard-psi.html';
+  } catch (err) {
+    toast(err.message, true);
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+}
+
+// REGISTRO PSICÓLOGO
+async function registroPsicologo(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-psi-registro');
+  btn.disabled = true;
+  btn.textContent = 'Criando conta...';
+  try {
+    const res = await fetch(`${API}/auth/registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome: document.getElementById('psi-reg-nome').value,
+        email: document.getElementById('psi-reg-email').value,
+        crp: document.getElementById('psi-reg-crp').value,
+        senha: document.getElementById('psi-reg-senha').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erro);
+    toast('Conta criada! Faça login.');
+    document.getElementById('form-reg-psi').style.display = 'none';
+  } catch (err) {
+    toast(err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar conta';
+  }
+}
+
 // Redireciona se já logado
-if (localStorage.getItem('token')) window.location.href = 'dashboard.html';
+if (localStorage.getItem('token-pac')) window.location.href = 'dashboard-pac.html';
+if (localStorage.getItem('token')) window.location.href = 'dashboard-psi.html';
 </script>
 </body>
 </html>

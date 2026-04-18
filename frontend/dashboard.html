@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theralink — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0F4F8;
+  --surface: #FFFFFF;
+  --border: #DDE3EA;
+  --text: #1A2332;
+  --muted: #6B7A8D;
+  --accent: #4A7C6F;
+  --accent-light: #E8F2F0;
+  --danger: #D94F4F;
+  --warning: #D97706;
+  --success: #2E7D5E;
+  --sidebar-w: 240px;
+  --r: 14px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body { font-family: 'Instrument Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: var(--text); color: #fff;
+  display: flex; flex-direction: column;
+  z-index: 100; padding: 24px 0;
+}
+
+.sidebar-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem; font-weight: 800;
+  color: #fff; padding: 0 24px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: -0.3px;
+}
+
+.sidebar-logo span { color: #7BBFB0; }
+
+.nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 10px;
+  color: rgba(255,255,255,0.6); font-size: 0.92rem;
+  font-weight: 500; cursor: pointer; transition: all 0.2s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.nav-item.active { background: var(--accent); color: #fff; }
+
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-info {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+}
+
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.85rem; color: #fff;
+  flex-shrink: 0;
+}
+
+.user-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+.user-crp { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+.btn-sair {
+  width: 100%; margin-top: 8px; padding: 10px;
+  background: rgba(255,255,255,0.07); border: none; border-radius: 10px;
+  color: rgba(255,255,255,0.5); font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-sair:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+.header {
+  padding: 28px 32px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.header h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; }
+.header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+.btn-primary {
+  padding: 10px 20px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.content { padding: 24px 32px; }
+
+/* ABAS */
+.tabs { display: none; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* CARDS RESUMO */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;
+}
+
+.card {
+  background: var(--surface); border-radius: var(--r);
+  padding: 22px; border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.card-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+
+.card-icon.green { background: var(--accent-light); color: var(--accent); }
+.card-icon.blue { background: #E8F0FE; color: #3B6FD4; }
+.card-icon.orange { background: #FEF3E8; color: var(--warning); }
+.card-icon.purple { background: #F3E8FE; color: #7C4DBB; }
+
+.card-value { font-size: 1.8rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+.card-label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+
+/* GRID 2 COLUNAS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.section-card {
+  background: var(--surface); border-radius: var(--r);
+  border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
+}
+
+.section-header {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.section-title { font-weight: 700; font-size: 0.95rem; }
+
+.section-link {
+  font-size: 0.82rem; color: var(--accent); cursor: pointer;
+  font-weight: 600; border: none; background: none;
+}
+
+/* LISTA */
+.list-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.list-item:last-child { border-bottom: none; }
+.list-item:hover { background: var(--bg); }
+
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--accent-light); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+
+.item-name { font-weight: 600; font-size: 0.9rem; }
+.item-sub { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+.badge {
+  margin-left: auto; padding: 4px 10px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.badge.verde { background: #E8F5EE; color: var(--success); }
+.badge.laranja { background: #FEF3E8; color: var(--warning); }
+.badge.cinza { background: var(--bg); color: var(--muted); }
+
+/* TABELA PACIENTES */
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 12px 20px;
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border); background: var(--bg);
+}
+td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+
+.action-btn {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: none; font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.8rem; cursor: pointer; transition: all 0.2s; color: var(--text);
+}
+.action-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.action-btn.danger:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* MODAL */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center; z-index: 200;
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface); border-radius: var(--r);
+  padding: 32px; width: 100%; max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; }
+
+.form-grid { display: flex; flex-direction: column; gap: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+label { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 5px; }
+
+input, select, textarea {
+  width: 100%; padding: 11px 13px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: 'Instrument Sans', sans-serif; font-size: 0.92rem;
+  color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; }
+textarea { resize: vertical; min-height: 100px; }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 10px 20px; border: 1.5px solid var(--border); border-radius: 10px;
+  background: none; font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.9rem; cursor: pointer; color: var(--muted);
+}
+.btn-save {
+  padding: 10px 24px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); color: #fff;
+  padding: 12px 24px; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 500; transition: transform 0.3s; z-index: 999;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.erro { background: var(--danger); }
+.toast.ok { background: var(--success); }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 48px 24px; color: var(--muted); }
+.empty svg { opacity: 0.3; margin-bottom: 12px; }
+.empty p { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">Thera<span>link</span></div>
+  <nav class="nav">
+    <button class="nav-item active" onclick="irPara('inicio')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Início
+    </button>
+    <button class="nav-item" onclick="irPara('pacientes')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Pacientes
+    </button>
+    <button class="nav-item" onclick="irPara('sessoes')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Sessões
+    </button>
+    <button class="nav-item" onclick="irPara('prontuarios')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Prontuários
+    </button>
+    <button class="nav-item" onclick="irPara('pagamentos')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      Pagamentos
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div>
+        <div class="user-name" id="user-nome">...</div>
+        <div class="user-crp" id="user-crp"></div>
+      </div>
+    </div>
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- INÍCIO -->
+  <div id="tab-inicio" class="tab-content active">
+    <div class="header">
+      <div>
+        <h2 id="saudacao">Bom dia!</h2>
+        <p>Aqui está seu resumo de hoje</p>
+      </div>
+      <button class="btn-primary" onclick="abrirModalPaciente()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Novo paciente
+      </button>
+    </div>
+    <div class="content">
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon green">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div class="card-value" id="total-pacientes">—</div>
+          <div class="card-label">Pacientes ativos</div>
+        </div>
+        <div class="card">
+          <div class="card-icon blue">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="card-value" id="sessoes-hoje">—</div>
+          <div class="card-label">Sessões hoje</div>
+        </div>
+        <div class="card">
+          <div class="card-icon orange">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="card-value" id="receita-mes">—</div>
+          <div class="card-label">Receita do mês</div>
+        </div>
+        <div class="card">
+          <div class="card-icon purple">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="card-value" id="sessoes-mes">—</div>
+          <div class="card-label">Sessões no mês</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="section-card">
+          <div class="section-header">
+            <span class="section-title">Próximas sessões</span>
+            <button class="section-link" onclick="irPara('sessoes')">Ver todas</button>
+          </div>
+          <div id="lista-sessoes-inicio"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-header">
+            <span class="section-title">Pacientes recentes</span>
+            <button class="section-link" onclick="irPara('pacientes')">Ver todos</button>
+          </div>
+          <div id="lista-pacientes-inicio"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PACIENTES -->
+  <div id="tab-pacientes" class="tab-content">
+    <div class="header">
+      <div>
+        <h2>Pacientes</h2>
+        <p>Gerencie seus pacientes</p>
+      </div>
+      <button class="btn-primary" onclick="abrirModalPaciente()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Novo paciente
+      </button>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Convênio</th><th>Ações</th></tr></thead>
+          <tbody id="tabela-pacientes"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSÕES -->
+  <div id="tab-sessoes" class="tab-content">
+    <div class="header">
+      <div>
+        <h2>Sessões</h2>
+        <p>Agenda e histórico de atendimentos</p>
+      </div>
+      <button class="btn-primary" onclick="abrirModalSessao()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Nova sessão
+      </button>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <table>
+          <thead><tr><th>Paciente</th><th>Data e Hora</th><th>Modalidade</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tabela-sessoes"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRONTUÁRIOS -->
+  <div id="tab-prontuarios" class="tab-content">
+    <div class="header">
+      <div>
+        <h2>Prontuários</h2>
+        <p>Registros clínicos dos pacientes</p>
+      </div>
+      <button class="btn-primary" onclick="abrirModalProntuario()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Novo registro
+      </button>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <table>
+          <thead><tr><th>Paciente</th><th>Título</th><th>Tipo</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="tabela-prontuarios"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGAMENTOS -->
+  <div id="tab-pagamentos" class="tab-content">
+    <div class="header">
+      <div>
+        <h2>Pagamentos</h2>
+        <p>Controle financeiro das sessões</p>
+      </div>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <table>
+          <thead><tr><th>Paciente</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
+          <tbody id="tabela-pagamentos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL PACIENTE -->
+<div class="overlay" id="modal-paciente">
+  <div class="modal">
+    <div class="modal-title">Novo paciente</div>
+    <div class="form-grid">
+      <div><label>Nome completo</label><input type="text" id="p-nome" placeholder="Nome do paciente"></div>
+      <div class="form-row">
+        <div><label>E-mail</label><input type="email" id="p-email" placeholder="email@exemplo.com"></div>
+        <div><label>Telefone</label><input type="tel" id="p-telefone" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Data de nascimento</label><input type="date" id="p-nascimento"></div>
+        <div><label>Convênio</label><input type="text" id="p-convenio" placeholder="Particular"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="fecharModal('modal-paciente')">Cancelar</button>
+      <button class="btn-save" onclick="salvarPaciente()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SESSÃO -->
+<div class="overlay" id="modal-sessao">
+  <div class="modal">
+    <div class="modal-title">Nova sessão</div>
+    <div class="form-grid">
+      <div>
+        <label>Paciente</label>
+        <select id="s-paciente"><option value="">Selecione...</option></select>
+      </div>
+      <div class="form-row">
+        <div><label>Data e hora</label><input type="datetime-local" id="s-data"></div>
+        <div><label>Duração (min)</label><input type="number" id="s-duracao" value="50"></div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Modalidade</label>
+          <select id="s-modalidade">
+            <option value="online">Online</option>
+            <option value="presencial">Presencial</option>
+          </select>
+        </div>
+        <div><label>Valor (R$)</label><input type="number" id="s-valor" placeholder="150.00" step="0.01"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="fecharModal('modal-sessao')">Cancelar</button>
+      <button class="btn-save" onclick="salvarSessao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRONTUÁRIO -->
+<div class="overlay" id="modal-prontuario">
+  <div class="modal">
+    <div class="modal-title">Novo registro clínico</div>
+    <div class="form-grid">
+      <div>
+        <label>Paciente</label>
+        <select id="pr-paciente"><option value="">Selecione...</option></select>
+      </div>
+      <div>
+        <label>Título</label>
+        <input type="text" id="pr-titulo" placeholder="Ex: Sessão inicial">
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="pr-tipo">
+          <option value="sessao">Sessão</option>
+          <option value="avaliacao">Avaliação</option>
+          <option value="evolucao">Evolução</option>
+        </select>
+      </div>
+      <div>
+        <label>Conteúdo</label>
+        <textarea id="pr-conteudo" placeholder="Anotações da sessão..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="fecharModal('modal-prontuario')">Cancelar</button>
+      <button class="btn-save" onclick="salvarProntuario()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://theralink-production.up.railway.app/api';
+let token = localStorage.getItem('token');
+let psicologo = JSON.parse(localStorage.getItem('psicologo') || '{}');
+let pacientes = [];
+
+if (!token) window.location.href = 'index.html';
+
+// Setup inicial
+document.getElementById('user-nome').textContent = psicologo.nome || '';
+document.getElementById('user-crp').textContent = psicologo.crp ? `CRP ${psicologo.crp}` : '';
+document.getElementById('user-avatar').textContent = (psicologo.nome || '?')[0].toUpperCase();
+
+const hora = new Date().getHours();
+const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+document.getElementById('saudacao').textContent = `${saudacao}, ${(psicologo.nome || '').split(' ')[0]}!`;
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+}
+
+function toast(msg, tipo = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${tipo}`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function irPara(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (tab === 'pacientes') carregarPacientes();
+  if (tab === 'sessoes') carregarSessoes();
+  if (tab === 'prontuarios') carregarProntuarios();
+  if (tab === 'pagamentos') carregarPagamentos();
+}
+
+function sair() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+
+// MODAIS
+function abrirModalPaciente() {
+  document.getElementById('modal-paciente').classList.add('open');
+}
+function abrirModalSessao() {
+  preencherSelectPacientes('s-paciente');
+  document.getElementById('modal-sessao').classList.add('open');
+}
+function abrirModalProntuario() {
+  preencherSelectPacientes('pr-paciente');
+  document.getElementById('modal-prontuario').classList.add('open');
+}
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function preencherSelectPacientes(selectId) {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="">Selecione...</option>';
+  pacientes.forEach(p => {
+    sel.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+  });
+}
+
+// Fecha modal clicando fora
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// PACIENTES
+async function carregarPacientes() {
+  const res = await fetch(`${API}/pacientes`, { headers: headers() });
+  pacientes = await res.json();
+  const tb = document.getElementById('tabela-pacientes');
+  if (!pacientes.length) {
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">Nenhum paciente cadastrado</td></tr>';
+    return;
+  }
+  tb.innerHTML = pacientes.map(p => `
+    <tr>
+      <td><strong>${p.nome}</strong></td>
+      <td>${p.email || '—'}</td>
+      <td>${p.telefone || '—'}</td>
+      <td>${p.convenio || 'Particular'}</td>
+      <td><button class="action-btn" onclick="verProntuario('${p.id}','${p.nome}')">Prontuário</button></td>
+    </tr>
+  `).join('');
+  document.getElementById('total-pacientes').textContent = pacientes.filter(p => p.ativo).length;
+}
+
+async function salvarPaciente() {
+  const body = {
+    nome: document.getElementById('p-nome').value,
+    email: document.getElementById('p-email').value,
+    telefone: document.getElementById('p-telefone').value,
+    data_nascimento: document.getElementById('p-nascimento').value || null,
+    convenio: document.getElementById('p-convenio').value
+  };
+  if (!body.nome) return toast('Nome é obrigatório', 'erro');
+  const res = await fetch(`${API}/pacientes`, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) return toast(data.erro, 'erro');
+  toast('Paciente cadastrado!', 'ok');
+  fecharModal('modal-paciente');
+  carregarPacientes();
+  carregarInicio();
+}
+
+// SESSÕES
+async function carregarSessoes() {
+  const res = await fetch(`${API}/sessoes`, { headers: headers() });
+  const sessoes = await res.json();
+  const tb = document.getElementById('tabela-sessoes');
+  if (!sessoes.length) {
+    tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">Nenhuma sessão cadastrada</td></tr>';
+    return;
+  }
+  tb.innerHTML = sessoes.map(s => {
+    const data = new Date(s.data_hora).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const badgeClass = s.status === 'realizada' ? 'verde' : s.status === 'cancelada' ? 'cinza' : 'laranja';
+    const videoBtn = s.modalidade === 'online' && s.sala_video
+      ? `<a href="https://daily.co/${s.sala_video}" target="_blank"><button class="action-btn">Entrar</button></a>`
+      : '';
+    return `<tr>
+      <td><strong>${s.pacientes?.nome || '—'}</strong></td>
+      <td>${data}</td>
+      <td>${s.modalidade}</td>
+      <td>R$ ${Number(s.valor || 0).toFixed(2)}</td>
+      <td><span class="badge ${badgeClass}">${s.status}</span></td>
+      <td>${videoBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function salvarSessao() {
+  const body = {
+    paciente_id: document.getElementById('s-paciente').value,
+    data_hora: document.getElementById('s-data').value,
+    duracao_min: document.getElementById('s-duracao').value,
+    modalidade: document.getElementById('s-modalidade').value,
+    valor: document.getElementById('s-valor').value
+  };
+  if (!body.paciente_id || !body.data_hora) return toast('Preencha os campos obrigatórios', 'erro');
+  const res = await fetch(`${API}/sessoes`, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) return toast(data.erro, 'erro');
+  toast('Sessão agendada!', 'ok');
+  fecharModal('modal-sessao');
+  carregarSessoes();
+}
+
+// PRONTUÁRIOS
+async function carregarProntuarios() {
+  if (!pacientes.length) await carregarPacientes();
+  const tb = document.getElementById('tabela-prontuarios');
+  if (!pacientes.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">Cadastre pacientes primeiro</td></tr>'; return; }
+  let todos = [];
+  for (const p of pacientes.slice(0, 10)) {
+    const res = await fetch(`${API}/prontuarios/${p.id}`, { headers: headers() });
+    const lista = await res.json();
+    todos = todos.concat(lista.map(r => ({ ...r, paciente_nome: p.nome })));
+  }
+  if (!todos.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">Nenhum prontuário registrado</td></tr>'; return; }
+  todos.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+  tb.innerHTML = todos.map(r => {
+    const data = new Date(r.criado_em).toLocaleDateString('pt-BR');
+    return `<tr>
+      <td><strong>${r.paciente_nome}</strong></td>
+      <td>${r.titulo}</td>
+      <td><span class="badge cinza">${r.tipo}</span></td>
+      <td>${data}</td>
+      <td><button class="action-btn">Ver</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function salvarProntuario() {
+  const body = {
+    paciente_id: document.getElementById('pr-paciente').value,
+    titulo: document.getElementById('pr-titulo').value,
+    tipo: document.getElementById('pr-tipo').value,
+    conteudo: document.getElementById('pr-conteudo').value
+  };
+  if (!body.paciente_id || !body.titulo) return toast('Preencha os campos obrigatórios', 'erro');
+  const res = await fetch(`${API}/prontuarios`, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) return toast(data.erro, 'erro');
+  toast('Prontuário salvo!', 'ok');
+  fecharModal('modal-prontuario');
+  carregarProntuarios();
+}
+
+// PAGAMENTOS
+async function carregarPagamentos() {
+  const res = await fetch(`${API}/pagamentos`, { headers: headers() });
+  const lista = await res.json();
+  const tb = document.getElementById('tabela-pagamentos');
+  if (!lista.length) { tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px">Nenhum pagamento registrado</td></tr>'; return; }
+  tb.innerHTML = lista.map(p => {
+    const data = new Date(p.criado_em).toLocaleDateString('pt-BR');
+    const badgeClass = p.status === 'pago' ? 'verde' : p.status === 'cancelado' ? 'cinza' : 'laranja';
+    return `<tr>
+      <td><strong>${p.pacientes?.nome || '—'}</strong></td>
+      <td>R$ ${Number(p.valor).toFixed(2)}</td>
+      <td><span class="badge ${badgeClass}">${p.status}</span></td>
+      <td>${data}</td>
+    </tr>`;
+  }).join('');
+}
+
+// INÍCIO
+async function carregarInicio() {
+  await carregarPacientes();
+  const resSessoes = await fetch(`${API}/sessoes`, { headers: headers() });
+  const sessoes = await resSessoes.json();
+  const hoje = new Date().toDateString();
+  const sessoesHoje = sessoes.filter(s => new Date(s.data_hora).toDateString() === hoje);
+  document.getElementById('sessoes-hoje').textContent = sessoesHoje.length;
+
+  const mesAtual = new Date().getMonth();
+  const sessoesMes = sessoes.filter(s => new Date(s.data_hora).getMonth() === mesAtual);
+  document.getElementById('sessoes-mes').textContent = sessoesMes.length;
+
+  const receita = sessoesMes.filter(s => s.status === 'realizada').reduce((acc, s) => acc + Number(s.valor || 0), 0);
+  document.getElementById('receita-mes').textContent = `R$ ${receita.toFixed(0)}`;
+
+  // Próximas sessões
+  const proximas = sessoes.filter(s => new Date(s.data_hora) >= new Date() && s.status === 'agendada').slice(0, 4);
+  const listaSessoes = document.getElementById('lista-sessoes-inicio');
+  if (!proximas.length) {
+    listaSessoes.innerHTML = '<div class="empty"><p>Nenhuma sessão agendada</p></div>';
+  } else {
+    listaSessoes.innerHTML = proximas.map(s => {
+      const data = new Date(s.data_hora).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      return `<div class="list-item">
+        <div class="avatar">${(s.pacientes?.nome || '?')[0]}</div>
+        <div><div class="item-name">${s.pacientes?.nome || '—'}</div><div class="item-sub">${data} · ${s.modalidade}</div></div>
+        <span class="badge laranja">agendada</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Pacientes recentes
+  const recentes = pacientes.slice(0, 4);
+  const listaPacientes = document.getElementById('lista-pacientes-inicio');
+  if (!recentes.length) {
+    listaPacientes.innerHTML = '<div class="empty"><p>Nenhum paciente cadastrado</p></div>';
+  } else {
+    listaPacientes.innerHTML = recentes.map(p => `
+      <div class="list-item">
+        <div class="avatar">${p.nome[0]}</div>
+        <div><div class="item-name">${p.nome}</div><div class="item-sub">${p.convenio || 'Particular'}</div></div>
+        <span class="badge verde">ativo</span>
+      </div>
+    `).join('');
+  }
+}
+
+carregarInicio();
+</script>
+</body>
+</html>

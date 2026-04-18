@@ -17,7 +17,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('../frontend'));
+app.use(express.static('./public'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/pacientes', pacientesRoutes);
